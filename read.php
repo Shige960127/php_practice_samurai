@@ -4,17 +4,42 @@ $user = 'root';
 $password = 'root';
 
 try {
+    $pdo = new PDO($dsn, $user, $password);
+    
+    if (isset($_GET['order'])) {
+        $order = $_GET['order'];
+    } else {
+        $order = NULL;
+    }
+    
+    if (isset($_GET['keyword'])) {
+        $keyword = $_GET['keyword'];
+    } else {
+        $keyword = NULL; 
+    };
 
-$pdo = new PDO($dsn, $user, $password);
-$sql_select = 'SELECT * FROM products';
-$stmt_select = $pdo -> query($sql_select);
-$products = $stmt_select -> fetchAll(PDO::FETCH_ASSOC);
+    if ($order === 'desc') {
+        $sql_select = 'SELECT * FROM products WHERE product_name LIKE :keyword ORDER BY updated_at DESC';
+    } else {
+        $sql_select = 'SELECT * FROM products WHERE product_name LIKE :keyword ORDER BY updated_at ASC';
+    }
+
+    $stmt_select = $pdo -> prepare($sql_select);
+    $partial_match = "%{$keyword}%";
+    $stmt_select -> bindValue(':keyword', $partial_match, PDO::PARAM_STR);
+    $stmt_select -> execute();
+
+    $products = $stmt_select -> fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
 
     exit($e -> getMessage());
 
 } 
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -40,7 +65,16 @@ $products = $stmt_select -> fetchAll(PDO::FETCH_ASSOC);
             <h2>商品一覧</h2>
             <div class="products-ui">
                 <div>
-                    <!-- ここに並び替えボタンと検索ボックスを作成する -->
+                    <a href="read.php?order=desc&keyword=<?=$keyword?>">
+                        <img src="PHP+DB_商品管理アプリ用ファイル/アイコン用画像/desc.png" alt="降順に並び替え" class="sort-img">
+                    </a> 
+                    <a href="read.php?order=asc&keyword=<?=$keyword?>">
+                        <img src="PHP+DB_商品管理アプリ用ファイル/アイコン用画像/asc.png" alt="昇順に並び替え" class="sort-img">
+                    </a>
+                    <form action="read.php" method="get" class="search-form">
+                        <input type="hidden" name="order" value="<?= $order ?>">
+                        <input type="text" class="search-box" placeholder="商品名で検索" name="keyword" value="<?=$keyword?>">
+                    </form>
                 </div>
                 <a href="#" class="btn">商品登録</a>
             </div>
