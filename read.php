@@ -63,6 +63,11 @@ try {
     <main>
         <article class="products">
             <h2>商品一覧</h2>
+            <?php
+            if (isset($_GET['message'])) {
+                echo "<p class='success'>{$_GET['message']}</p>";
+            }
+            ?>
             <div class="products-ui">
                 <div>
                     <a href="read.php?order=desc&keyword=<?=$keyword?>">
@@ -76,7 +81,7 @@ try {
                         <input type="text" class="search-box" placeholder="商品名で検索" name="keyword" value="<?=$keyword?>">
                     </form>
                 </div>
-                <a href="#" class="btn">商品登録</a>
+                <a href="create.php" class="btn">商品登録</a>
             </div>
             <table class="products-table">
                 <tr>
@@ -85,6 +90,8 @@ try {
                     <th>単価</th>
                     <th>在庫</th>
                     <th>仕入れ先コード</th>
+                    <th>編集</th>
+                    <th>削除</th>
                 </tr>
                 <?php
                 foreach ($products as $product) {
@@ -95,6 +102,8 @@ try {
                     <td>{$product['price']}</td>
                     <td>{$product['stock_quantity']}</td>
                     <td>{$product['vendor_code']}</td>
+                    <td><a href='update.php?id={$product['id']}'><img src='PHP+DB_商品管理アプリ用ファイル/アイコン用画像/edit.png' alt='編集' class='edit-icon'></a></td>
+                    <td><a href='delete.php?id={$product['id']}'><img src='PHP+DB_商品管理アプリ用ファイル/アイコン用画像/delete.png' alt='削除' class='delete-icon'></a></td>
                     </tr>
                     ";
                     echo $table_row;
